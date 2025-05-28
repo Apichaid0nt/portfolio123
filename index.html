@@ -3,478 +3,317 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portfolio (KMITL Engineering)</title>
+    <title>Portfolio 8-Bit KMITL</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
     <style>
+        :root {
+            --kmitl-orange: #F58025;
+            --kmitl-maroon: #ffa155;
+            --background-color: #c9c9c9; /* Dark Maroon Tint */
+            --text-color: #e0e0e0;
+            --border-color: #4d4d4d;
+            --container-bg: rgba(63, 56, 56, 0.9);
+            --pixel-size: 10px;
+            -o-border-image: repeat;
+            -o-animation: 0s;
+            -o-animation-direction: right;
+            -o-animation-duration: 5s;
+        }
+
         * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            /* เพื่อให้เคอร์เซอร์ dot ไม่บังเนื้อหา */
-            cursor: none; /* ซ่อนเคอร์เซอร์เริ่มต้นของระบบ */
+            margin: 0; padding: 0; box-sizing: border-box;
+            cursor: none;
+            image-rendering: pixelated;
         }
 
         body {
-            font-family: 'Sarabun', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #F58025 0%, #800000 100%);
-            min-height: 100vh;
-            overflow-x: hidden;
-            color: #333;
+            font-family: 'VT323', monospace;
+            background-color: var(--background-color);
+            background-image:
+                linear-gradient(var(--kmitl-orange, 0.1), var(--kmitl-orange, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, var(--kmitl-orange, 0.1), var(--kmitl-orange, 0.1) 1px, transparent 1px);
+            background-size: 50px 50px; /* Pixel grid background */
+            min-height: 100vh; overflow-x: hidden;
+            color: var(--text-color); font-size: 22px; /* Increased for better VT323 */
+            line-height: 1.7; position: relative;
         }
 
-        /* NEW: Custom Cursor Dot */
-        .cursor-dot {
-            width: 10px;
-            height: 10px;
-            background-color: rgba(255, 255, 255, 0.8); /* สีขาวโปร่งแสง */
-            border-radius: 50%;
-            position: fixed;
-            z-index: 9999; /* ให้อยู่เหนือทุกองค์ประกอบ */
-            pointer-events: none; /* ทำให้คลิกผ่าน dot ได้ */
-            transform: translate(-50%, -50%); /* จัดกึ่งกลาง dot ที่ตำแหน่งเมาส์ */
-            transition: transform 0.1s ease-out; /* ทำให้เคลื่อนไหวราบรื่น */
-            mix-blend-mode: difference; /* เพิ่มความสวยงาม */
+        /* Scanlines Overlay */
+        body::after {
+            content: ""; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            width: 100%; height: 100%; pointer-events: none;
+            background: repeating-linear-gradient(0deg, rgba(0,0,0,0.3) 1px, transparent 1px, transparent 4px);
+            z-index: 99999; opacity: 0.5;
         }
 
-        /* เมื่อเมาส์อยู่เหนือองค์ประกอบที่คลิกได้ (เช่น ปุ่ม, ลิงก์) ให้ cursor dot เปลี่ยนไป */
-        a, button, .nav-btn, .timeline-item, .gallery-item, .certificate-item {
-            cursor: none; /* ซ่อนเคอร์เซอร์ระบบสำหรับองค์ประกอบเหล่านี้ด้วย */
+        /* Custom KMITL Pixel Cursor */
+        .cursor-pixel {
+            width: 24px; height: 24px;
+            background: var(--kmitl-orange);
+            border: 4px solid var(--kmitl-maroon);
+            box-shadow: 2px 2px 0 var(--text-color);
+            position: fixed; z-index: 100000;
+            pointer-events: none; transform: translate(0, 0);
+            transition: none;
         }
-
-        /* Optional: เพิ่มอีกหนึ่งวงแหวนรอบๆ cursor dot */
-        .cursor-ring {
-            width: 30px;
-            height: 30px;
-            border: 2px solid rgba(255, 255, 255, 0.5); /* สีขาวโปร่งแสง */
-            border-radius: 50%;
-            position: fixed;
-            z-index: 9998;
-            pointer-events: none;
-            transform: translate(-50%, -50%);
-            transition: transform 0.2s ease-out;
-            mix-blend-mode: difference;
-        }
-
-        /* --- End Custom Cursor Dot CSS --- */
-
+         a, button, .nav-btn, .timeline-item, .gallery-item, .certificate-item { cursor: none; }
 
         .container {
-            max-width: 800px;
-            margin: 0 auto;
-            position: relative;
-            padding-bottom: 80px; /* Add padding to prevent nav overlap */
+            max-width: 850px; margin: 0 auto;
+            position: relative; padding-bottom: 100px;
         }
 
-        /* Animated Background */
-        .bg-animation {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            z-index: -1; overflow: hidden;
-        }
-        .floating-element {
-            position: absolute; background: rgba(255, 255, 255, 0.08);
-            border-radius: 50%; animation: float 8s ease-in-out infinite;
-        }
-        .floating-element:nth-child(1) { width: 80px; height: 80px; top: 20%; left: 10%; animation-delay: 0s; }
-        .floating-element:nth-child(2) { width: 120px; height: 120px; top: 60%; right: 10%; animation-delay: 3s; }
-        .floating-element:nth-child(3) { width: 60px; height: 60px; top: 80%; left: 20%; animation-delay: 6s; }
-        @keyframes float {
-            0%, 100% { transform: translateY(0px) rotate(0deg); }
-            50% { transform: translateY(-25px) rotate(190deg); }
-        }
-
-        /* Page Structure */
+        /* Page Structure & Transitions */
         .page {
-            width: 100%;
-            min-height: 100vh; /* Ensure pages try to fill height */
-            display: none; /* Hidden by default */
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            padding: 1rem;
-            position: relative;
+            width: 100%; min-height: 80vh;
+            display: none; flex-direction: column;
+            justify-content: center; align-items: center;
+            padding: 2rem; position: absolute; /* Changed to absolute for transitions */
+            top: 1.5rem; left: 1rem; right: 1rem;
+            background: var(--container-bg);
+            border: var(--pixel-size) solid var(--kmitl-orange);
+            box-shadow: var(--pixel-size) var(--pixel-size) 0 0 var(--kmitl-maroon);
+            margin: 1.5rem 0; /* Only top/bottom margin */
+            text-align: center;
+            opacity: 0; /* Start hidden */
+            transition: opacity 0.3s ease-in-out;
         }
-
         .page.active {
-            display: flex; /* Use flex for all active pages initially */
-            animation: fadeInUp 0.6s ease-out;
+            display: flex;
+            opacity: 1; /* Show active page */
+            z-index: 10; /* Ensure active is on top */
+        }
+        .content-page.active { display: block; }
+
+        /* --- Page Transition Animations --- */
+        @keyframes glitch-in {
+            0% { opacity: 0; transform: translateX(50px) skewX(-20deg); filter: blur(5px); }
+            20% { opacity: 1; transform: translateX(-20px) skewX(10deg); filter: blur(0px); }
+            40% { opacity: 1; transform: translateX(10px) skewX(-5deg); }
+            60% { opacity: 1; transform: translateX(-5px) skewX(2deg); }
+            80% { opacity: 1; transform: translateX(2px) skewX(-1deg); }
+            100% { opacity: 1; transform: translateX(0) skewX(0); filter: blur(0px); }
+        }
+        @keyframes glitch-out {
+            0% { opacity: 1; transform: translateX(0) skewX(0); }
+            50% { opacity: 0.5; transform: translateX(-50px) skewX(20deg); filter: blur(5px); }
+            100% { opacity: 0; transform: translateX(-100px) skewX(30deg); filter: blur(10px); }
         }
 
-        /* Content Pages - Override to block & left align */
-        .content-page.active {
-            display: block;
-            text-align: left;
-        }
+        .page-enter { animation: glitch-in 0.7s cubic-bezier(0.250, 0.460, 0.450, 0.940) both; }
+        .page-exit { animation: glitch-out 0.8s cubic-bezier(0.550, 0.085, 0.680, 0.530) both; }
+        /* --- End Transitions --- */
 
-        .cover-page, .content-page {
-            background: rgba(255, 255, 255, 0.98);
-            backdrop-filter: blur(8px);
-            border-radius: 25px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
-            border: 1px solid rgba(255, 255, 255, 0.4);
-            padding: 2rem;
-            margin: 1rem;
-            position: relative;
-            overflow: hidden;
-            width: calc(100% - 2rem);
-            text-align: center; /* Center cover page, content pages will override */
-        }
-
-        .content-page {
-             text-align: left;
-        }
 
         /* KMITL Logo */
         .kmitl-logo-img {
-            width: 120px; /* Adjust size as needed */
-            height: auto;
-            margin: 0 auto 1.5rem;
-            display: block;
-            border-radius: 50%; /* Make it round if it's a gear/logo */
-            background: white; /* Add white bg if logo has transparency */
-            padding: 5px;
-            box-shadow: 0 8px 25px rgba(128, 0, 0, 0.3);
-            animation: pulse 2s ease-in-out infinite;
+            width: 120px; height: 120px; margin: 0 auto 1.5rem; display: block;
+            background: white; padding: 5px;
+            border: 4px solid var(--kmitl-orange);
+            border-radius: 100px;
+            box-shadow: 4px 4px 0 0 var(--kmitl-maroon);
+            animation: pulse-kmitl 1.5s steps(2, end) infinite;
         }
-
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); box-shadow: 0 8px 25px rgba(128, 0, 0, 0.3); }
-            50% { transform: scale(1.03); box-shadow: 0 12px 35px rgba(245, 128, 37, 0.4); }
+        @keyframes pulse-kmitl {
+            50% { transform: scale(1.05); border-color: var(--kmitl-maroon); box-shadow: 4px 4px 0 0 var(--kmitl-orange); }
         }
 
         /* Text Styles */
         .title, .section-title {
-            font-size: 2.8rem; font-weight: 800;
-            background: linear-gradient(135deg, #F58025, #800000);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 0.8rem; text-transform: uppercase; letter-spacing: 1.5px;
-            text-align: center; /* Ensure titles are centered */
+            font-family: 'Press Start 2P', cursive; font-size: 2rem;
+            color: var(--kmitl-orange); text-shadow: 3px 3px 0 var(--kmitl-maroon);
+            margin-bottom: 1.5rem; text-transform: uppercase;
+            text-align: center; line-height: 1.5;
         }
-        .section-title { margin-bottom: 2rem; }
-        .subtitle { font-size: 1.3rem; color: #555; margin-bottom: 1.5rem; font-weight: 400; }
-        .name { font-size: 2.2rem; font-weight: 700; color: #333; margin-bottom: 0.8rem; }
-        .school { font-size: 1.1rem; color: #F58025; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
+        .section-title { margin-bottom: 2.5rem; }
+        .subtitle { font-size: 1.3rem; color: #ccc; margin-bottom: 2rem; }
+        .name { font-size: 1.8rem; font-weight: 700; color: #fff; margin-bottom: 0.8rem; }
+        .school { font-size: 1.1rem; color: var(--kmitl-orange); font-weight: 600; text-transform: uppercase; }
 
         /* Images */
-        .profile-img {
-            width: 250px; height: 250px; border-radius: 20%;
-            margin: 0 auto 1.5rem; object-fit: cover;
-            border: 6px solid #F58025;
-            box-shadow: 0 15px 35px rgba(245, 128, 37, 0.3);
-            transition: transform 0.3s ease;
+        .profile-img, .ces-img, .big-img, .gallery-item img, .contact-info-img {
+            height: auto;
+            width: 200px;
+            border: 4px solid var(--kmitl-orange);
+            box-shadow: 4px 4px 0 0 var(--kmitl-maroon);
+            background-color: #fff; padding: 4px;
+            transition: transform 0.2s steps(4, end);
         }
-        .ces-img {
-            width: 100%; max-width: 300px; height: auto;
-            margin: 1rem auto; object-fit: cover;
-            border: 6px solid #800000;
-            box-shadow: 0 15px 35px rgba(128, 0, 0, 0.3);
-            transition: transform 0.3s ease; border-radius: 10px;
-            display: block; /* Center images in certificates */
-        }
-        .big-img {
-            width: 100%; max-width: 450px; height: auto;
-            margin: 1rem auto; object-fit: cover;
-            border: 3px solid #800000;
-            box-shadow: 0 15px 35px rgba(128, 0, 0, 0.3);
-            transition: transform 0.3s ease; border-radius: 10px;
-            display: block; /* Center images in certificates */
-        }
-        .profile-img:hover, .ces-img:hover { transform: scale(1.05); }
+        .profile-img { width: 220px; height: 300px; margin: 0 auto 1.5rem; object-fit: cover; }
+        .ces-img { width: 100%; max-width: 280px; margin: 1rem auto; display: block; }
+        .big-img { width: 100%; max-width: 450px; margin: 1.5rem auto; display: block; }
+        .profile-img:hover, .ces-img:hover, .big-img:hover, .gallery-item img:hover { transform: scale(1.03) rotate(2deg); }
 
         /* Navigation */
-        .nav-container {
-            position: fixed; bottom: 1rem; left: 50%;
-            transform: translateX(-50%); z-index: 1000;
-        }
+        .nav-container { position: fixed; bottom: 1rem; left: 50%; transform: translateX(-50%); z-index: 1000; }
         .nav {
-            background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px);
-            border-radius: 30px; padding: 0.8rem; display: flex;
-            gap: 0.8rem; box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-            border: 1px solid rgba(255, 255, 255, 0.5);
+            background: var(--container-bg); padding: 0.8rem; display: flex; gap: 0.8rem;
+            border: var(--pixel-size) solid var(--kmitl-maroon);
+            box-shadow: var(--pixel-size) var(--pixel-size) 0 0 var(--kmitl-orange);
         }
         .nav-btn {
-            width: 45px; height: 45px; border-radius: 50%; border: none;
-            background: linear-gradient(135deg, #F58025, #800000);
-            color: white; cursor: pointer; transition: all 0.3s ease;
+            width: 50px; height: 50px; border: none;
+            background: var(--kmitl-maroon); color: var(--kmitl-orange);
+            cursor: none; transition: all 0.2s steps(2, end);
             display: flex; align-items: center; justify-content: center;
-            font-weight: bold; font-size: 1.2rem;
+            font-size: 1.6rem; border: 3px solid var(--kmitl-orange);
+            box-shadow: 3px 3px 0 0 #500000;
         }
-        .nav-btn:hover, .nav-btn.active {
-            transform: scale(1.15) translateY(-3px);
-            box-shadow: 0 6px 18px rgba(245, 128, 37, 0.5);
-            background: linear-gradient(135deg, #800000, #F58025);
+        .nav-btn:hover { background: var(--kmitl-orange); color: var(--kmitl-maroon); transform: translate(3px, 3px); box-shadow: none; border-color: var(--kmitl-maroon); }
+        .nav-btn.active {
+            background: var(--kmitl-orange); color: #fff; transform: translate(3px, 3px); box-shadow: none;
+            border-color: var(--kmitl-maroon); text-shadow: 1px 1px 0 var(--kmitl-maroon);
         }
 
         /* Profile Page */
-        .profile-grid { display: grid; grid-template-columns: 1fr; gap: 2rem; margin-bottom: 2rem; }
         .profile-info h3 {
-            color: #800000; font-size: 1.3rem; margin-bottom: 0.8rem;
-            font-weight: 700; border-bottom: 2px solid #F58025;
-            padding-bottom: 0.3rem; display: inline-block;
+            color: var(--kmitl-orange); font-size: 1.4rem; margin-bottom: 1rem;
+            border-bottom: 3px dashed var(--kmitl-maroon); padding-bottom: 0.3rem; display: inline-block;
         }
-        .profile-info p { color: #444; margin-bottom: 0.8rem; line-height: 1.7; }
         .contact-info {
-            background: linear-gradient(135deg, #F58025 0%, #a02a2a 100%);
-            color: white; padding: 1.5rem; border-radius: 15px; margin-top: 2rem;
+            background: var(--kmitl-maroon); color: white; padding: 1.5rem; margin-top: 2rem;
+            border: 4px solid var(--kmitl-orange);
         }
-        .contact-info h3 { margin-bottom: 1rem; font-size: 1.3rem; color: white; border: none; }
-        .contact-item { display: flex; align-items: center; margin-bottom: 0.8rem; gap: 1rem; font-size: 1rem; }
+        .contact-info h3 { color: white; border: none; text-shadow: 2px 2px 0 #000;}
+        .contact-item span:first-child { color: var(--kmitl-orange); font-size: 1.5rem; }
 
         /* Timeline */
-        .timeline { position: relative; padding-left: 1.5rem; }
-        .timeline::before {
-            content: ''; position: absolute; left: 0; top: 0; bottom: 0;
-            width: 4px; background: linear-gradient(180deg, #F58025, #800000);
-            border-radius: 2px;
-        }
+        .timeline { position: relative; padding-left: 2rem; border-left: 4px dashed var(--kmitl-orange); }
+        .timeline::before { content: none; /* Removed old line */ }
         .timeline-item {
-            position: relative; margin-bottom: 2rem; background: rgba(245, 128, 37, 0.08);
-            padding: 1.5rem; border-radius: 15px; margin-left: 1rem;
-            border-left: 5px solid #F58025;
+            position: relative; margin-bottom: 2rem; background: rgba(245, 128, 37, 0.1);
+            padding: 1.5rem; margin-left: 1rem; border: 3px solid var(--kmitl-maroon);
         }
         .timeline-item::before {
-            content: ''; position: absolute; left: -1.95rem; top: 1.5rem;
-            width: 18px; height: 18px; background: #800000;
-            border-radius: 50%; border: 4px solid white;
-            box-shadow: 0 2px 10px rgba(128, 0, 0, 0.4);
+            content: '>>'; font-family: 'Press Start 2P';
+            position: absolute; left: -3.5rem; top: 1.5rem;
+            width: 20px; height: 20px; background: none;
+            color: var(--kmitl-orange); font-size: 1.5rem;
+            border: none; box-shadow: none;
         }
         .timeline-year {
-            background: linear-gradient(135deg, #F58025, #800000); color: white;
-            padding: 0.5rem 1rem; border-radius: 20px; font-weight: bold;
-            display: inline-block; margin-bottom: 1rem; font-size: 1rem;
+            background: var(--kmitl-orange); color: var(--background-color);
+            padding: 0.4rem 1rem; font-weight: bold;
+            display: inline-block; margin-bottom: 1rem; font-size: 1.2rem;
+            border: 2px solid var(--kmitl-maroon);
         }
-        .timeline-item h3 { color: #800000; margin-bottom: 0.5rem; }
-        .timeline-item p { color: #555; line-height: 1.6; }
+        .timeline-item h3 { color: var(--kmitl-orange); }
 
-        /* Gallery */
-        .gallery { display: grid; grid-template-columns: 1fr; gap: 1.5rem; margin-top: 2rem; }
+        /* Gallery & Activities */
+        .gallery { display: grid; grid-template-columns: 1fr; gap: 2rem; margin-top: 2rem; }
         .gallery-item {
-            background: white; border-radius: 15px; padding: 1.5rem; text-align: center;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            border: 1px solid #ddd; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            background: var(--container-bg); border: 3px solid var(--kmitl-maroon);
+            padding: 1.5rem; text-align: center;
+            transition: transform 0.2s steps(2, end);
+            box-shadow: 3px 3px 0 0 var(--kmitl-orange);
         }
-         .gallery-item .profile-img {
-            width: 100%; height: auto; max-width: 300px; border-radius: 10px;
-            border-color: #800000; margin-bottom: 1rem;
-        }
-        .gallery-item:hover {
-            transform: translateY(-8px); border-color: #F58025;
-            box-shadow: 0 12px 35px rgba(245, 128, 37, 0.25);
-        }
-        .gallery-item h3 { color: #800000; margin-bottom: 0.5rem; font-size: 1.2rem;}
-        .gallery-item p { color: #555; font-size: 0.95rem; line-height: 1.5;}
+        .gallery-item:hover { transform: translate(-3px, -3px); box-shadow: 6px 6px 0 0 var(--kmitl-orange); }
+        .gallery-item img { border-color: var(--kmitl-orange); box-shadow: 4px 4px 0 0 var(--kmitl-maroon); }
+        .gallery-item h3 { color: var(--kmitl-orange); }
 
-        /* Certificates */
-        .certificate-item {
-            background: #fff; border-radius: 15px; padding: 1.5rem; margin-bottom: 1.5rem;
-            border-left: 6px solid #F58025; transition: transform 0.3s ease, box-shadow 0.3s ease;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05); text-align: center; /* Center content */
+        /* Skills Section */
+        .skills-section {
+            margin-top: 3rem; padding: 1.5rem; background: #2a2a2a;
+            border: 4px solid var(--kmitl-maroon); box-shadow: 4px 4px 0 0 var(--kmitl-orange);
         }
-        .certificate-item:hover { transform: translateX(5px); box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1); }
-        .certificate-item h3 { color: #800000; margin-bottom: 0.5rem; font-size: 1.2rem; }
-        .certificate-item p { color: #555; line-height: 1.6; font-size: 0.95rem; text-align: left; } /* Align p left */
-        .year-badge {
-            background: #800000; color: white; padding: 0.3rem 0.8rem; border-radius: 12px;
-            font-size: 0.85rem; font-weight: bold; float: right; margin-left: 10px;
+        .skills-section h3 {
+            font-family: 'Press Start 2P', cursive; color: var(--kmitl-orange);
+            text-shadow: 2px 2px 0 var(--kmitl-maroon);
         }
-        .certificate-item .ces-img { border-color: #F58025; }
+        .skill-bar {
+            width: 100%; background-color: #444; border: 2px solid var(--border-color);
+            padding: 4px; height: 32px;
+        }
+        .skill-level {
+            height: 100%; background: var(--kmitl-orange);
+            box-shadow: inset -4px 0 0 0 var(--kmitl-maroon);
+        }
+        .skill-level::before { /* Pixel blocks effect */
+            content: ""; display: block; width: 100%; height: 100%;
+            background: repeating-linear-gradient(90deg, var(--kmitl-orange) 0px, var(--kmitl-orange) 8px, var(--kmitl-maroon) 8px, var(--kmitl-maroon) 10px);
+        }
+        /* Hide percentage text, use visual blocks */
+        .lua { width: 65%; } .html { width: 50%; } .css { width: 50%; } .js { width: 45%; }
+
 
         /* Responsive */
         @media (min-width: 600px) {
-            .profile-grid { grid-template-columns: 1fr 1fr; }
             .gallery { grid-template-columns: 1fr 1fr; }
-             .title, .section-title { font-size: 3rem; }
-             .subtitle { font-size: 1.5rem; }
-             .name { font-size: 2.5rem; }
-             .cover-page, .content-page { padding: 3rem; margin: 2rem; }
+            .title, .section-title { font-size: 2.2rem; }
         }
         @media (max-width: 480px) {
-            /* สำหรับ Mobile/Small Screens: ซ่อน Custom Cursor */
-            .cursor-dot, .cursor-ring {
-                display: none;
-            }
-
-            .title, .section-title { font-size: 2rem; }
-            .subtitle { font-size: 1.1rem; }
-            .name { font-size: 1.8rem; }
-            .profile-img { width: 200px; height: 200px; }
-            .cover-page, .content-page { padding: 1.5rem; margin: 0.5rem; width: calc(100% - 1rem);}
-            .nav { gap: 0.5rem; padding: 0.6rem; }
-            .nav-btn { width: 40px; height: 40px; font-size: 1rem; }
-            .timeline-item::before { left: -1.75rem; width: 15px; height: 15px; }
-            .year-badge { float: none; display: inline-block; margin-bottom: 10px; margin-left: 0;}
-            .certificate-item .ces-img { max-width: 250px; }
+            body { font-size: 18px; }
+            .title, .section-title { font-size: 1.6rem; }
+            .profile-img { width: 100px; height: 200px; }
+            .page { padding: 1rem; left: 0.5rem; right: 0.5rem; top: 1rem; }
+            .nav { gap: 0.4rem; padding: 0.5rem; }
+            .nav-btn { width: auto; height: auto; font-size: 1.3rem; }
+            .cursor-pixel { display: none; }
+            * { cursor: auto; }
+             a, button, .nav-btn, .timeline-item, .gallery-item, .certificate-item { cursor: pointer; }
         }
 
-        /* --- CSS สำหรับโหมดถ่ายภาพ --- */
-        body.capturing-now .title,
-        body.capturing-now .section-title {
-            background: none !important;
-            color: #800000 !important;
-            -webkit-background-clip: initial !important;
-            -webkit-text-fill-color: initial !important;
-            text-shadow: none !important;
-        }
-        body.capturing-now .kmitl-logo-img,
-        body.capturing-now .profile-img,
-        body.capturing-now .ces-img {
-             box-shadow: none !important; /* ปิดเงาภาพ */
-        }
-        body.capturing-now .cover-page,
-        body.capturing-now .content-page {
-            box-shadow: none !important;
-            backdrop-filter: none !important;
-            border: 1px solid #ccc !important; /* เพิ่มขอบบางๆ แทนเงา */
-        }
-        body.capturing-now .bg-animation,
-        body.capturing-now .cover-page::before {
-            display: none !important; /* ซ่อน Animation และ Shimmer */
-        }
-        body.capturing-now .nav-container {
-             /* เราใช้ visibility ใน JS, แต่ใส่ display เผื่อไว้ */
-            display: none !important;
-        }
-         body.capturing-now .floating-element {
-             display: none !important;
-         }
-        /* ซ่อน cursor dot ในโหมดถ่ายภาพ */
-        body.capturing-now .cursor-dot,
-        body.capturing-now .cursor-ring {
-            display: none !important;
-        }
-        /* --- จบ CSS โหมดถ่ายภาพ --- */
-
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+        /* Ensure enough space for absolute positioned pages */
+        #page-container-wrapper {
+            position: relative;
+            min-height: 100vh; /* Adjust as needed */
+            padding-bottom: 100px;
         }
 
-        /* --- Skills Section CSS --- */
-        .skills-section {
-            margin-top: 3rem;
-            padding: 1.5rem;
-            background: #f9f9f9; 
-            border-radius: 15px;
-            border-left: 6px solid #800000; 
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        /* Typewriter (keep as is) */
+        .typewriter {
+            overflow: hidden; border-right: .10em solid var(--kmitl-orange);
+            white-space: nowrap; margin: 0 auto; letter-spacing: .10em;
+            animation: typing 3.5s steps(30, end), blink-caret .75s step-end infinite;
+        }
+        @keyframes typing { from { width: 0 } to { width: 100% } }
+        @keyframes blink-caret { from, to { border-color: transparent } 50% { border-color: var(--kmitl-orange); } }
+
+        #pacman-canvas {
+            position: fixed;
+            top: 0; left: 0;
+            width: 200%;
+            height: 200%;
+            z-index: 0;
+            pointer-events: none;
         }
 
-        .skills-section h3 {
-            color: #800000;
-            margin-bottom: 1.5rem;
-            font-size: 1.5rem; 
-            text-align: center; 
-            font-weight: 700;
-        }
-
-        .skill {
-            margin-bottom: 1.5rem;
-        }
-
-        .skill p {
-            margin-bottom: 0.5rem;
-            font-weight: 600;
-            color: #333;
-            font-size: 1rem;
-        }
-
-        .skill-bar {
-            width: 100%;
-            background-color: #e0e0e0;
-            border-radius: 25px;
-            padding: 4px;
-            box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
-        }
-
-        .skill-level {
-            height: 22px;
-            border-radius: 25px;
-            background: linear-gradient(90deg, #F58025, #a03030);
-            text-align: right; 
-            line-height: 22px; 
-            color: white; 
-            font-size: 0.85rem; 
-            font-weight: bold;
-            padding-right: 10px; 
-            transition: width 0.8s ease-in-out; 
-            box-shadow: 0 2px 5px rgba(245, 128, 37, 0.4);
-            white-space: nowrap; 
-        }
-
-        /* --- กำหนด % ความเก่ง --- */
-        .lua { width: 65%; }
-        .html { width: 50%; }
-        .css { width: 50%; }
-        .js { width: 45%; }
-        /* --- End Skills Section CSS --- */
-
-        .contact-info-img {
-            width: 150px;
-            height: auto;
-            float: right; 
-            margin-left: 20px;
-            margin-bottom: 10px; 
-            border-radius: 15px; 
-            background: white;
-            padding: 3px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-            border: 2px solid white;
-        }
-
-        /* --- Clearfix for contact-info to contain the float --- */
-        /* ช่วยให้กล่อง .contact-info คลุมพื้นที่ของรูปที่ float อยู่ */
-        .contact-info::after {
-            content: "";
-            display: table;
-            clear: both;
-        }
 
     </style>
 </head>
 <body>
-    <div class="bg-animation">
-        <div class="floating-element"></div>
-        <div class="floating-element"></div>
-        <div class="floating-element"></div>
-    </div>
+    <canvas id="pacman-canvas"></canvas>
 
-    <div class="container">
-        <div class="page cover-page active" id="cover">
-            <img class="kmitl-logo-img" src="image/logo.png" alt="KMITL Engineering Logo">
+    <div class="container" id="page-container-wrapper"> <div class="page cover-page" id="cover"> <img class="kmitl-logo-img" src="image/logo.png" alt="KMITL Engineering Logo">
             <h1 class="title">Portfolio</h1>
-            <p class="subtitle">Computer Engineering - KMITL</p>
+            <p class="subtitle">Faculty of Computer Engineering - KMITL</p>
             <img class="profile-img" src="image/448667135_1019996143115967_3131599560298724223_n.jpg" alt="Apichai Kmapanin">
-            <h2 class="name">Apichai Khmapanin</h2>
+            <h2 class="name typewriter">Apichai Khmapanin</h2>
             <p class="school">King Mongkut's Institute of Technology Ladkrabang</p>
         </div>
 
         <div class="page content-page" id="preface">
-            <h2 class="section-title">คำนำ <br> PREFACE</h2>
+            <h2 class="section-title">PREFACE</h2>
             <p>
-                ตั้งแต่เด็ก ผมก็รู้สึกหลงไหลในเทคโนโลยีและความเป็นไปได้ที่ไม่มีที่สิ้นสุดของมัน ความรู้สึกนี้นำให้ผมเริ่มรักในสายงาน วิทยาการคอมพิวเตอร์ และนั่นก็เป็นเหตุผลที่ผมเลือกเรียนต่อในสายงานนี้ที่สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง
-            </p>
+                Ever since I was young, I’ve been fascinated by technology and its endless possibilities. That feeling naturally led me to fall in love with the field of computer science — and it’s the reason I chose to pursue this path at King Mongkut’s Institute of Technology Ladkrabang.            </p>
             <p>
-                ตลอดเวลาที่เรียนอยู่ที่นี่ ผมได้ซึมซับพลังของความเปลี่ยนแปลงในโลกของวิศวกรรมคอมพิวเตอร์ และรู้สึกตื่นเต้นกับสิ่งใหม่ๆ ที่ได้ค้นพบและพัฒนาอยู่เสมอ มั่นใจว่านี่แหละคือเส้นทางที่ผมอยากเดินต่อไป
-            </p>
+                Throughout my studies here, I’ve come to truly appreciate the power of change in the world of computer engineering. I get excited every time I discover or develop something new. Those moments have confirmed to me that this is exactly the path I want to keep walking on.            </p>
             <img class="big-img" src="image/kmitl-big.jpg">
         </div>
 
         <div class="page content-page" id="sop">
-            <h2 class="section-title">Statement of Purpose <br> SOP</h2>
+            <h2 class="section-title">Statement of Purpose</h2>
             <p>
-                ผมชื่อ อภิชัย คำภานิล เป็นนักเรียนมัธยมปลายจากโรงเรียนสิริรัตนธร เรียนกจบว่า "อ้า" ที่ได้ครับ ตอนนีผมกำลังมุ่งมั่นจะเข้าศึกษาต่อด้านวิชาการคอมพิวเตอร์ที่ลาดกระบัง เพราะผมสนใจเทคโนโลยีมาตลอด และอยากเป็นคนหนึ่งที่ได้พัฒนาระบบบ คอมพิวเตอร์ให้ล้ำหน้าขึ้นไปอีก
-            </p>
+                My name is Apichai Kamphanin, a high school student from Sirirattanathorn School — but you can just call me “Ah” I’m currently aiming to study Computer Science at King Mongkut’s Institute of Technology Ladkrabang. I’ve always been fascinated by technology, and I want to be someone who helps push the boundaries of what computers can do.            </p>
             <p>
-                ผมหลงไหลในโลกของคอมพิวเตอร์ตั้งแต่เด็กๆ เลยครับ พอมีโอกาสเรียนรู้เรื่องที่เกี่ยวข้องกับคอมพิวเตอร์และคณิตศาสตร์ ซึ่งช่วยให้ผมได้ฝึกฝนทั้งการเขียนโปรแกรม อัลกอริทึม และการแก้ปัญหา ผมชอบเรียนคณิตศาสตร์กับฟิสิกส์ เพราะมันฝึกให้เราคิดอย่างมีเหตุผลและวิเคราะห์หาได้ดี ซึ่งเป็นทักษะสำคัญในการเข้าใจระบบคอมพิวเตอร์ที่ซับซ้อน
-            </p>
+                Ever since I was a kid, I’ve been passionate about the world of computers. Whenever I had the chance, I’d dive into learning more about tech and mathematics — and through that, I discovered programming, algorithms, and problem-solving. I really enjoy studying math and physics because they train me to think logically and analytically, which are crucial skills for understanding complex computer systems            </p>
             <p>
-                หนึ่งในผลงานที่ผมเคยทำ คือเขียนแอปพลิเคชันเล็กๆ สำหรับช่วยจัดการกิจกรรมบางอย่างในโรงเรียน ซึ่งตอนทำก็มีทั้งผิดพลาดและได้เรียนรู้จากมัน มันเป็นโอกาสที่ดีที่ผมมาได้ยิ่งขึ้น และได้ความรู้สึกภูมิใจในสิ่งที่ตัวเองทำ รวมถึงผลักดันให้ผมอยากเดินหน้าต่อไปในเส้นทางวิศวกรรมคอมพิวเตอร์ครับ
-            </p>
+                One of the projects I’ve worked on was a small application I built to help manage certain school activities. It wasn’t perfect — I made mistakes — but I learned a lot from the experience. It gave me a chance to apply what I’ve studied in a real way, and I felt proud of what I created. That feeling pushed me to keep going further along the path toward computer engineering.            </p>
             <img class="big-img" src="image/banner.jpg">
         </div>
 
@@ -482,97 +321,75 @@
             <h2 class="section-title">Profile</h2>
             <div class="profile-grid">
                 <div class="profile-info">
-                    <h3>Personal Information</h3>
+                    <h3>Personal Info</h3>
                     <p><strong>Name:</strong> Apichai Kmapanin</p>
                     <p><strong>Nickname:</strong> Ah</p>
-                    <p><strong>Date of Birth:</strong> December 8, 2549</p>
+                    <p><strong>D.O.B:</strong> Dec 8, 2006</p>
                     <p><strong>Age:</strong> 18</p>
-                    <p><strong>School:</strong> Sirirattanathorn School</p>
-                    <p><strong>Program:</strong> English-Mathematics</p>
-                    <p><strong>Hobbies:</strong> Write Code, Cover Music</p>
+                    <p><strong>School:</strong> Sirirattanathorn</p>
+                    <p><strong>Program:</strong> English-Math</p>
+                    <p><strong>Hobbies:</strong> Coding, Music</p>
                 </div>
                 <div class="profile-info">
                     <h3>About Me</h3>
-                    <p>A passionate Computer Engineering student at KMITL with a strong interest in technology and innovation. I enjoy creating solutions through programming and exploring the endless possibilities of computer science.</p>
-                    <p>My goal is to contribute to the advancement of technology while continuously learning and growing in this dynamic field.</p>
+                    <p>A passionate KMITL Computer Engineering student with a strong interest in tech & innovation. I enjoy creating solutions via programming and exploring CS possibilities.</p>
+                    <p>My goal is to contribute to tech advancement while continuously learning.</p>
                 </div>
             </div>
             <div class="contact-info">
-                <h3>Contact Information</h3>
-                <img src="image/1730697104765.jpg" alt="Profile Icon" class="contact-info-img">
+                 <img src="image/1730697104765.jpg" alt="Profile Icon" class="contact-info-img">
+                <h3>Contact</h3>
                 <div class="contact-item"><span>📧</span><span>ApichaiDont@gmail.com</span></div>
                 <div class="contact-item"><span>📱</span><span>080-891-0414</span></div>
-                <div class="contact-item"><span>📍</span><span>69/142 Baan Suan Lalana Prawet, Bangkok</span></div>
-                <div class="contact-item"><span>👤</span><span>Facebook: Apichai Kmapanin</span></div>
+                <div class="contact-item"><span>📍</span><span>69/142 Baan Suan Lalana, Prawet, BKK</span></div>
+                <div class="contact-item"><span>👤</span><span>FB: Apichai Kmapanin</span></div>
             </div>
         </div>
 
         <div class="page content-page" id="education">
             <h2 class="section-title">Education</h2>
             <div class="timeline">
-                <div class="timeline-item"><div class="timeline-year">2556</div><h3>Kindergarten</h3><p>Sri Eiam Anusorn School</p><p>Foundation learning and early childhood development</p></div>
-                <div class="timeline-item"><div class="timeline-year">2562</div><h3>Primary Level</h3><p>Sri Eiam Anusorn School</p><p>Basic education with focus on fundamental subjects</p></div>
-                <div class="timeline-item"><div class="timeline-year">2565</div><h3>Junior High School</h3><p>Sirirattanathorn School</p><p>Intermediate education with expanding knowledge base</p></div>
-                <div class="timeline-item"><div class="timeline-year">2567</div><h3>High School</h3><p>Sirirattanathorn School</p><p>English-Mathematics Program - Specialized in STEM subjects</p></div>
-                <div class="timeline-item"><div class="timeline-year">Present</div><h3>University (Expected)</h3><p>King Mongkut's Institute of Technology Ladkrabang</p><p>Pursuing Bachelor's Degree in Computer Engineering</p></div>
+                <div class="timeline-item"><div class="timeline-year">2013</div><h3>Kindergarten</h3><p>Sri Eiam Anusorn</p><p></p></div>
+                <div class="timeline-item"><div class="timeline-year">2019</div><h3>Primary</h3><p>Sri Eiam Anusorn</p><p>// GPA : 3.6 </p></div>
+                <div class="timeline-item"><div class="timeline-year">2022</div><h3>Jr. High</h3><p>Sirirattanathorn</p><p>// GPA : 2.53 </p></div>
+                <div class="timeline-item"><div class="timeline-year">2024</div><h3>High School</h3><p>Sirirattanathorn</p><p>// GPA : 2.94 <p></div>
+                <div class="timeline-item"><div class="timeline-year">NOW</div><h3>University</h3><p>KMITL (Expected)</p><p></p></div>
             </div>
         </div>
 
         <div class="page content-page" id="activities">
             <h2 class="section-title">Activities</h2>
             <div class="gallery">
-                <div class="gallery-item"><img class="profile-img" src="image/f.jpg" alt="Activity 1"><h3>World Vision Day 2566</h3><p>Participated in community service activities and educational workshops focused on global awareness and social responsibility.</p></div>
-                <div class="gallery-item"><img class="profile-img" src="image/ff.jpg" alt="Activity 2"><h3>Art Exhibition 2566</h3><p>Showcased creative works in school art exhibition, demonstrating artistic skills and creative expression.</p></div>
-                <div class="gallery-item"><img class="profile-img" src="image/w.jpg" alt="Activity 3"><h3>Math Magic Competition</h3><p>Participated in mathematics competition focusing on creative problem-solving and mathematical innovation.</p></div>
-                <div class="gallery-item"><img class="profile-img" src="image/ww.jpg" alt="Activity 4"><h3>Computer Programming Workshop</h3><p>Attended intensive programming workshops to enhance coding skills and learn new technologies.</p></div>
+                <div class="gallery-item"><img src="image/f.jpg" alt="Activity 1"><h3>World Vision 2566</h3><p>Community service & workshops.</p></div>
+                <div class="gallery-item"><img src="image/ff.jpg" alt="Activity 2"><h3>Art Exhibition 2566</h3><p>Showcased creative works.</p></div>
+                <div class="gallery-item"><img src="image/w.jpg" alt="Activity 3"><h3>Math Magic Comp.</h3><p>Problem-solving challenge.</p></div>
+                <div class="gallery-item"><img src="image/ww.jpg" alt="Activity 4"><h3>Programming Wkshp</h3><p>Enhanced coding skills.</p></div>
             </div>
         </div>
-        <div class="page content-page" id="activities1">
+        <div class="page content-page" id="experience">
             <h2 class="section-title">Experience</h2>
             <div class="gallery">
-                <a href="https://apichaiweb.netlify.app"><div class="gallery-item"><img class="profile-img" src="image/eas.jpg" alt="Activity 1"><h3> Old Profile Website </h3><p>https://apichaiweb.netlify.app </p></div></a>
-                <a href="https://srtlearn.netlify.app/"><div class="gallery-item"><img class="profile-img" src="image/eaa.jpg" alt="Activity 2"><h3> Old Catarory Website School </h3><p>https://srtlearn.netlify.app/ </p></div></a>
-                <a href="https://portfolio-apichai.netlify.app/"><div class="gallery-item"><img class="profile-img" src="image/psa.jpg" alt="Activity 2"><h3> Website Portfolio </h3><p>https://portfolio-apichai.netlify.app/ </p></div></a>
+                <a href="https://apichaiweb.netlify.app" target="_blank"><div class="gallery-item"><img src="image/eas.jpg" alt="Old Profile"><h3>Old Profile Site</h3><p>My first portfolio attempt.</p></div></a>
+                <a href="https://srtlearn.netlify.app/" target="_blank"><div class="gallery-item"><img src="image/eaa.jpg" alt="School Site"><h3>School Category Site</h3><p>A project for school resources.</p></div></a>
+                <a href="https://portfolio-apichai.netlify.app/" target="_blank"><div class="gallery-item"><img src="image/psa.jpg" alt="Portfolio Site"><h3>Another Portfolio</h3><p>A different style portfolio.</p></div></a>
             </div>
 
             <div class="skills-section">
-                <h3>Technical Skills</h3>
-                <div class="skill">
-                    <p>Lua</p>
-                    <div class="skill-bar">
-                        <div class="skill-level lua">65%</div>
-                    </div>
-                </div>
-                <div class="skill">
-                    <p>HTML</p>
-                    <div class="skill-bar">
-                        <div class="skill-level html">50%</div>
-                    </div>
-                </div>
-                <div class="skill">
-                    <p>CSS</p>
-                    <div class="skill-bar">
-                        <div class="skill-level css">50%</div>
-                    </div>
-                </div>
-                <div class="skill">
-                    <p>JavaScript</p>
-                    <div class="skill-bar">
-                        <div class="skill-level js">45%</div>
-                    </div>
-                </div>
+                <h3>Tech_Skills.exe</h3>
+                 <div class="skill"> <p>// Lua</p> <div class="skill-bar"> <div class="skill-level lua"></div> </div> </div>
+                <div class="skill"> <p>// HTML</p> <div class="skill-bar"> <div class="skill-level html"></div> </div> </div>
+                <div class="skill"> <p>// CSS</p> <div class="skill-bar"> <div class="skill-level css"></div> </div> </div>
+                <div class="skill"> <p>// JavaScript</p> <div class="skill-bar"> <div class="skill-level js"></div> </div> </div>
             </div>
-            </div>
+        </div>
 
         <div class="page content-page" id="certificates">
             <h2 class="section-title">Certificates</h2>
-            <div class="certificate-item"><img class="ces-img" src="image/ces.jpg" alt="Certificate 1"><div class="year-badge">2565</div><h3>Student Development Certificate - Level 70</h3><p>Certificate of achievement in student development program demonstrating leadership skills and academic excellence. This certificate recognizes outstanding performance in various educational activities and community service projects.</p></div>
-            <div class="certificate-item"><img class="ces-img" src="image/ces1.jpg" alt="Certificate 2"><div class="year-badge">2566</div><h3>Student Development Certificate - Level 71</h3><p>Advanced level certificate acknowledging continued growth in academic performance and leadership capabilities. This represents progression in student development with enhanced skills in critical thinking and problem-solving.</p></div>
-            <div class="certificate-item"><img class="ces-img" src="image/ces2.jpg" alt="Certificate 3"><div class="year-badge">2567</div><h3>Math Magic Competition Certificate</h3><p>Certificate of participation in the prestigious Math Magic competition, demonstrating exceptional mathematical abilities and creative problem-solving skills. This achievement highlights excellence in STEM education and innovative thinking.</p></div>
+            <div class="certificate-item"><img class="ces-img" src="image/ces.jpg" alt="Cert 1"><div class="year-badge">2022</div><h3>Student Dev Lvl 70</h3><p>Recognized leadership and academic excellence.</p></div>
+            <div class="certificate-item"><img class="ces-img" src="image/ces1.jpg" alt="Cert 2"><div class="year-badge">2023</div><h3>Student Dev Lvl 71</h3><p>Continued growth and advanced capabilities.</p></div>
+            <div class="certificate-item"><img class="ces-img" src="image/ces2.jpg" alt="Cert 3"><div class="year-badge">2024</div><h3>Math Magic Comp.</h3><p>Showcased math & problem-solving skills.</p></div>
         </div>
-    </div>
-
-    <div class="nav-container">
+    </div> <div class="nav-container">
         <div class="nav">
             <button class="nav-btn" data-page="cover" onclick="showPage('cover', this)">🏠</button>
             <button class="nav-btn" data-page="preface" onclick="showPage('preface', this)">📝</button>
@@ -580,55 +397,87 @@
             <button class="nav-btn" data-page="profile" onclick="showPage('profile', this)">👤</button>
             <button class="nav-btn" data-page="education" onclick="showPage('education', this)">🎓</button>
             <button class="nav-btn" data-page="activities" onclick="showPage('activities', this)">⚡</button>
-            <button class="nav-btn" data-page="activities1" onclick="showPage('activities1', this)">✈️</button>
+            <button class="nav-btn" data-page="experience" onclick="showPage('experience', this)">✈️</button>
             <button class="nav-btn" data-page="certificates" onclick="showPage('certificates', this)">🏆</button>
         </div>
     </div>
 
-    <div class="cursor-dot"></div>
-    <div class="cursor-ring"></div>
+    <div class="cursor-pixel"></div>
+
     <script>
         const pages = document.querySelectorAll('.page');
         const navButtons = document.querySelectorAll('.nav-btn');
+        const cursorPixel = document.querySelector('.cursor-pixel');
+        let currentPage = null;
+        const transitionDuration = 600; // Match animation duration
 
         function showPage(pageId, clickedButton) {
-            pages.forEach(page => {
-                page.classList.remove('active');
-                page.style.display = 'none';
-            });
+            const nextPage = document.getElementById(pageId);
 
-            const selectedPage = document.getElementById(pageId);
-            selectedPage.classList.add('active');
-            // Check if it's cover or content to set display correctly
-            if (selectedPage.classList.contains('cover-page')) {
-                 selectedPage.style.display = 'flex';
-            } else {
-                 selectedPage.style.display = 'block';
+            if (!nextPage || (currentPage && currentPage.id === pageId)) {
+                return; // Do nothing if same page or page not found
             }
 
+            const oldPage = currentPage;
+            currentPage = nextPage; // Set new page as current
 
+            // Add exit animation to the old page (if it exists)
+            if (oldPage) {
+                oldPage.classList.add('page-exit');
+                oldPage.classList.remove('active', 'page-enter');
+
+                // Wait for animation to finish before hiding
+                setTimeout(() => {
+                    oldPage.style.display = 'none';
+                    oldPage.classList.remove('page-exit');
+                }, transitionDuration - 50); // Hide just before anim ends
+            }
+
+            // Prepare and show the new page
+            nextPage.classList.remove('page-exit'); // Ensure no exit class
+            nextPage.style.display = nextPage.classList.contains('cover-page') ? 'flex' : 'block';
+
+            // Add enter animation with a tiny delay to allow display change
+            setTimeout(() => {
+                nextPage.classList.add('active', 'page-enter');
+            }, 10); // Small delay
+
+            // Remove enter animation class after it finishes
+            setTimeout(() => {
+                nextPage.classList.remove('page-enter');
+            }, transitionDuration);
+
+
+            // Update Nav Buttons
             navButtons.forEach(btn => btn.classList.remove('active'));
+            if (clickedButton) {
+                clickedButton.classList.add('active');
+            } else {
+                const btn = document.querySelector(`.nav-btn[data-page="${pageId}"]`);
+                if(btn) btn.classList.add('active');
+            }
 
-            // Find the button to activate
-            const buttonToActivate = clickedButton ? clickedButton : document.querySelector(`.nav-btn[data-page="${pageId}"]`);
-            if (buttonToActivate && buttonToActivate.id !== 'capture-btn') { // Don't activate capture btn
-                 buttonToActivate.classList.add('active');
-            } else if (!clickedButton && pageId === 'cover') { // Ensure home is active if navigating by key to cover
-                 document.querySelector('.nav-btn[data-page="cover"]').classList.add('active');
+            // Restart typewriter
+            if (pageId === 'cover') {
+                const nameElement = document.querySelector('.name.typewriter');
+                if (nameElement) {
+                    nameElement.style.animation = 'none';
+                    nameElement.offsetHeight; /* trigger reflow */
+                    nameElement.style.animation = null;
+                }
             }
         }
 
         document.addEventListener('DOMContentLoaded', function() {
-            // Set 'cover' as the active page initially, or 'preface' if desired
+            // Set 'cover' as the active page initially
             showPage('cover', document.querySelector('.nav-btn[data-page="cover"]'));
         });
 
         document.addEventListener('keydown', function(e) {
-            // Updated pageIds array to include 'preface' and 'sop' in order
-            const pageIds = ['cover', 'preface', 'sop', 'profile', 'education', 'activities', 'certificates'];
-            const currentPage = document.querySelector('.page.active')?.id || 'cover';
-            let currentIndex = pageIds.indexOf(currentPage);
-            let nextIndex = currentIndex; // Default to current
+            const pageIds = ['cover', 'preface', 'sop', 'profile', 'education', 'activities', 'experience', 'certificates'];
+            const currentId = currentPage ? currentPage.id : 'cover';
+            let currentIndex = pageIds.indexOf(currentId);
+            let nextIndex = currentIndex;
 
             if (e.key === 'ArrowRight') {
                 nextIndex = (currentIndex < pageIds.length - 1) ? currentIndex + 1 : currentIndex;
@@ -642,21 +491,70 @@
             }
         });
 
-        // NEW: Custom Cursor JavaScript
-        const cursorDot = document.querySelector('.cursor-dot');
-        const cursorRing = document.querySelector('.cursor-ring');
-
+        // Custom Cursor JavaScript
         document.addEventListener('mousemove', (e) => {
-            const posX = e.clientX;
-            const posY = e.clientY;
-
-            cursorDot.style.left = `${posX}px`;
-            cursorDot.style.top = `${posY}px`;
-
-            cursorRing.style.left = `${posX}px`;
-            cursorRing.style.top = `${posY}px`;
+            cursorPixel.style.left = `${e.clientX}px`;
+            cursorPixel.style.top = `${e.clientY}px`;
         });
-        // End NEW: Custom Cursor JavaScript
+
+        // PackMan background
+    const canvas = document.getElementById("pacman-canvas");
+    const ctx = canvas.getContext("2d");
+
+    function resizeCanvas() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    }
+    window.addEventListener("resize", resizeCanvas);
+    resizeCanvas();
+
+    const pacman = {
+        x: Math.random() * window.innerWidth,
+        y: Math.random() * window.innerHeight,
+        radius: 25,
+        dx: (Math.random() < 0.5 ? -1 : 1) * (1 + Math.random() * 2),
+        dy: (Math.random() < 0.5 ? -1 : 1) * (1 + Math.random() * 2),
+    };
+
+    function drawPacman(pac, mouthOpen = true) {
+        ctx.beginPath();
+        if (mouthOpen) {
+            ctx.moveTo(pac.x, pac.y);
+            const angleOffset = pac.dx >= 0 ? [0.2, 1.8] : [1.2, 0.8]; // Facing left/right
+            ctx.arc(pac.x, pac.y, pac.radius, angleOffset[0] * Math.PI, angleOffset[1] * Math.PI, false);
+        } else {
+            ctx.arc(pac.x, pac.y, pac.radius, 0, 2 * Math.PI);
+        }
+        ctx.fillStyle = "orange";
+        ctx.fill();
+        ctx.closePath();
+
+        // Eye
+        ctx.beginPath();
+        ctx.arc(pac.x + (pac.dx >= 0 ? 8 : -8), pac.y - 10, 4, 0, 2 * Math.PI);
+        ctx.fillStyle = "black";
+        ctx.fill();
+    }
+
+    function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        drawPacman(pacman, Math.floor(Date.now() / 150) % 2 === 0);
+
+        pacman.x += pacman.dx;
+        pacman.y += pacman.dy;
+
+        // Bounce off walls
+        if (pacman.x < pacman.radius || pacman.x > canvas.width - pacman.radius) {
+            pacman.dx *= -1;
+        }
+        if (pacman.y < pacman.radius || pacman.y > canvas.height - pacman.radius) {
+            pacman.dy *= -1;
+        }
+
+        requestAnimationFrame(animate);
+    }
+
+    animate();
     </script>
 </body>
 </html>
