@@ -69,7 +69,8 @@
             width: 100%; min-height: 80vh;
             display: none; flex-direction: column;
             justify-content: center; align-items: center;
-            padding: 2rem; position: absolute; /* Changed to absolute for transitions */
+            padding: 2rem; 
+            position: absolute; /* Changed to absolute for transitions */
             top: 1.5rem; left: 1rem; right: 1rem;
             background: var(--container-bg);
             border: var(--pixel-size) solid var(--kmitl-orange);
@@ -86,7 +87,15 @@
             opacity: 1; /* Show active page */
             z-index: 10; /* Ensure active is on top */
         }
-        .content-page.active { display: block; }
+        .page::-webkit-scrollbar {
+            display: none;
+        }
+        .content-page.active {
+            display: block;
+            position: relative;
+            overflow-y: auto;
+            max-height: calc(100vh - 120px); /* ป้องกันล้นจอ */
+        }
 
         /* --- Page Transition Animations --- */
         @keyframes glitch-in {
@@ -292,12 +301,19 @@
 
         /* Skills Section */
         .skills-section {
-            margin-top: 3rem; padding: 1.5rem; background: #2a2a2a;
-            border: 4px solid var(--kmitl-maroon); box-shadow: 4px 4px 0 0 var(--kmitl-orange);
+            margin-top: 2rem;
+            padding: 1.2rem;
+            background: #2a2a2a;
+            border: 4px solid var(--kmitl-maroon);
+            box-shadow: 4px 4px 0 0 var(--kmitl-orange);
         }
+
         .skills-section h3 {
-            font-family: 'Press Start 2P', cursive; color: var(--kmitl-orange);
+            font-family: 'Press Start 2P', cursive;
+            color: var(--kmitl-orange);
             text-shadow: 2px 2px 0 var(--kmitl-maroon);
+            font-size: clamp(1rem, 3vw, 1.5rem);
+            margin-bottom: 1rem;
         }
         .skill-bar {
             width: 100%; background-color: #222;
@@ -342,6 +358,57 @@
             }
 
             .level-bar { width: 150px; }
+                
+            .arcade-title {
+                font-size: 2rem;
+                text-shadow: 2px 2px 0 var(--kmitl-maroon),
+                            4px 4px 0 rgba(0,0,0,0.3);
+            }
+            .skills-section {
+                padding: 1rem;
+                margin-top: 1.5rem;
+                border-width: 3px;
+            }
+
+            .profile-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .skill-bar {
+                height: 15px;
+                margin-bottom: 0.8rem;
+            }
+        }
+        @media (max-width: 600px) {
+            .nav-container {
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                width: 100vw;
+                transform: none;
+                z-index: 1000;
+                display: block !important;
+                background: var(--container-bg);
+                border-radius: 0;
+                box-shadow: 0 -2px 10px rgba(0,0,0,0.2);
+            }
+            .nav {
+                flex-wrap: wrap;
+                justify-content: space-around;
+                gap: 0.2rem;
+                padding: 0.4rem;
+                border-width: 2px;
+                box-shadow: none;
+            }
+            .nav-btn {
+                width: 38px;
+                height: 38px;
+                font-size: 1.1rem;
+                padding: 0;
+                border-width: 2px;
+            }
         }
         @media (max-width: 480px) {
             body { font-size: 18px; }
@@ -380,20 +447,277 @@
             pointer-events: none;
         }
 
+        /* เพิ่มใน <style> */
+        #loading-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--background-color);
+    z-index: 9999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.loading-content {
+    text-align: center;
+    image-rendering: pixelated;
+}
+
+.loading-logo {
+    width: 120px;
+    height: 120px;
+    margin-bottom: 20px;
+    image-rendering: pixelated;
+    animation: pixel-bounce 0.5s infinite alternate;
+}
+
+.loading-text {
+    font-family: 'Press Start 2P', cursive;
+    color: var(--kmitl-orange);
+    font-size: 24px;
+    margin-bottom: 20px;
+    animation: pixel-blink 1s infinite;
+}
+
+.loading-bar-container {
+    width: 300px;
+    height: 30px;
+    border: 4px solid var(--kmitl-orange);
+    padding: 4px;
+    margin: 20px auto;
+    position: relative;
+    background: #2a2a2a;
+}
+
+.loading-pixels {
+    height: 100%;
+    width: 0%;
+    background: repeating-linear-gradient(
+        90deg,
+        var(--kmitl-orange) 0px,
+        var(--kmitl-orange) 8px,
+        var(--kmitl-maroon) 8px,
+        var(--kmitl-maroon) 16px
+    );
+    transition: width 0.2s steps(20);
+}
+
+.loading-percentage {
+    font-family: 'Press Start 2P', cursive;
+    color: var(--kmitl-orange);
+    font-size: 16px;
+    margin-top: 10px;
+}
+
+@keyframes pixel-bounce {
+    0% { transform: translateY(0) scale(1); }
+    100% { transform: translateY(-10px) scale(1.1); }
+}
+
+@keyframes pixel-blink {
+    0%, 49% { opacity: 1; }
+    50%, 100% { opacity: 0; }
+}
+
+/* เพิ่ม CSS สำหรับ Arcade Cabinet */
+.arcade-cabinet {
+    width: 100%;
+    max-width: 850px;
+    margin: 0 auto;
+    padding: 20px;
+    background: linear-gradient(45deg, #2a2a2a, #1a1a1a);
+    border: 8px solid var(--kmitl-orange);
+    box-shadow: 0 0 30px rgba(245, 128, 37, 0.3),
+                inset 0 0 20px rgba(245, 128, 37, 0.2);
+    border-radius: 10px;
+    position: relative;
+}
+
+.arcade-screen {
+    background: #000;
+    padding: 20px;
+    border: 4px solid var(--kmitl-maroon);
+    border-radius: 5px;
+    margin-bottom: 30px;
+    position: relative;
+    overflow: hidden;
+}
+
+.arcade-title {
+    font-family: 'Press Start 2P', cursive;
+    font-size: clamp(1.5rem, 5vw, 3rem); /* ปรับขนาดตามจอแบบ responsive */
+    color: var(--kmitl-orange);
+    text-align: center;
+    text-shadow: 4px 4px 0 var(--kmitl-maroon),
+                 8px 8px 0 rgba(0,0,0,0.3);
+    margin-bottom: 10px;
+    animation: neon 1.5s ease-in-out infinite alternate;
+    word-break: break-word; /* ป้องกันข้อความล้นจอ */
+    line-height: 1.3;
+    padding: 0 10px;
+}
+
+.arcade-subtitle {
+    font-family: 'Press Start 2P', cursive;
+    font-size: 1rem;
+    color: #fff;
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.arcade-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+
+.arcade-logo {
+    width: 200px;
+    height: 200px;
+    border: 4px solid var(--kmitl-orange);
+    border-radius: 50%;
+    padding: 10px;
+    background: #fff;
+    animation: float 3s ease-in-out infinite;
+}
+
+.arcade-controls {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    margin-top: 20px;
+}
+
+.arcade-joystick {
+    width: 60px;
+    height: 120px;
+    background: var(--kmitl-orange);
+    border-radius: 10px;
+    position: relative;
+    transform-origin: bottom;
+    transition: transform 0.2s;
+}
+
+.arcade-joystick:hover {
+    transform: rotate(-15deg);
+}
+
+.start-button {
+    font-family: 'Press Start 2P', cursive;
+    font-size: 1.5rem;
+    padding: 15px 40px;
+    background: var(--kmitl-orange);
+    color: #fff;
+    border: none;
+    border-radius: 50px;
+    box-shadow: 0 5px 0 var(--kmitl-maroon),
+                0 10px 20px rgba(0,0,0,0.3);
+    cursor: pointer;
+    transition: transform 0.1s, box-shadow 0.1s;
+}
+
+.start-button:hover {
+    transform: translateY(2px);
+    box-shadow: 0 3px 0 var(--kmitl-maroon),
+                0 5px 10px rgba(0,0,0,0.3);
+}
+
+@keyframes neon {
+    from {
+        text-shadow: 0 0 10px var(--kmitl-orange),
+                     0 0 20px var(--kmitl-orange),
+                     0 0 30px var(--kmitl-orange);
+    }
+    to {
+        text-shadow: 0 0 5px var(--kmitl-orange),
+                     0 0 10px var(--kmitl-orange),
+                     0 0 15px var(--kmitl-orange);
+    }
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+.name.typewriter {
+    font-size: clamp(1.2rem, 4vw, 1.8rem);
+    overflow: hidden;
+    border-right: .10em solid var(--kmitl-orange);
+    white-space: nowrap;
+    margin: 0 auto;
+    letter-spacing: .10em;
+    animation: typing 3.5s steps(30, end), blink-caret .75s step-end infinite;
+    max-width: 90vw; /* ป้องกันการล้นจอ */
+}
+
+@media (max-width: 768px) {
+    .name.typewriter {
+        font-size: clamp(1rem, 3.5vw, 1.5rem);
+        letter-spacing: .08em;
+        animation: typing 2.5s steps(20, end), blink-caret .75s step-end infinite;
+    }
+}
+
+@media (max-width: 480px) {
+    .name.typewriter {
+        font-size: clamp(0.9rem, 3vw, 1.2rem);
+        letter-spacing: .05em;
+        animation: typing 2s steps(15, end), blink-caret .75s step-end infinite;
+    }
+}
+
+/* ปรับ animation typing ให้เหมาะกับขนาดจอ */
+@keyframes typing {
+    from { 
+        width: 0;
+        border-right-color: var(--kmitl-orange);
+    }
+    to { 
+        width: 100%;
+        border-right-color: var(--kmitl-orange);
+    }
+}
+
+
 
     </style>
 </head>
 <body>
+    <div id="loading-screen">
+        <div class="loading-content">
+            <img src="image/logo.png" alt="KMITL Logo" class="loading-logo">
+            <div class="loading-text">LOADING...</div>
+            <div class="loading-bar-container">
+                <div class="loading-pixels"></div>
+            </div>
+            <div class="loading-percentage">0%</div>
+        </div>
+    </div>
 
     <div class="container" id="page-container-wrapper">
         <div class="page cover-page" id="cover">
-            <img class="kmitl-logo-img" src="image/logo.png" alt="KMITL Engineering Logo">
-            <h1 class="title">Portfolio</h1>
-            <p class="subtitle">Faculty of Computer Engineering - KMITL</p>
-            <img class="profile-img" src="image/448667135_1019996143115967_3131599560298724223_n.jpg" alt="Apichai Kmapanin">
-            <h2 class="name typewriter">Apichai Khampanin</h2>
-            <p class="school">King Mongkut's Institute of Technology Ladkrabang</p>
-            <button id="play-button" class="play-btn">START</button>
+            <div class="arcade-cabinet">
+        <div class="arcade-screen">
+            <h1 class="arcade-title">PORTFOLIO</h1>
+            <h2 class="arcade-subtitle">Faculty of Computer Engineering - KMITL</h2>
+            <div class="arcade-content">
+                <img src="image/logo.png" alt="KMITL Logo" class="arcade-logo">
+                <img class="profile-img" src="image/1748512166738.jpg" alt="Profile">
+                <h2 class="name typewriter">Apichai Khampanin</h2>
+                <p class="school">King Mongkut's Institute of Technology Ladkrabang</p>
+            </div>
+        </div>
+        <div class="arcade-controls">
+            <div class="arcade-joystick"></div>
+            <button id="play-button" class="start-button">START</button>
+            <div class="arcade-joystick"></div>
+        </div>
+    </div>
         </div>
 
         <div class="page content-page" id="preface">
@@ -421,7 +745,7 @@
             <div class="profile-grid">
                 <div class="skills-section">
                     <h3>Personal Info</h3>
-                    <p><strong>Name:</strong> Apichai Kmapanin</p>
+                    <p><strong>Name:</strong> Apichai Khmapanin</p>
                     <p><strong>Nickname:</strong> Ah</p>
                     <p><strong>D.O.B:</strong> Dec 8, 2006</p>
                     <p><strong>Age:</strong> 18</p>
@@ -494,9 +818,9 @@
         <div class="page content-page" id="experience">
             <h2 class="section-title">Experience</h2>
             <div class="gallery">
-                <div class="gallery-item"><a href="https://apichaiweb.netlify.app" target="_blank"><img src="image/eas.jpg" alt="Old Profile"></a><h3>Old Profile Site</h3><p>My first portfolio attempt.</p></div>
-                <div class="gallery-item"><a href="https://srtlearn.netlify.app/" target="_blank"><img src="image/eaa.jpg" alt="School Site"></a><h3>School Category Site</h3><p>A project for school resources.</p></div>
-                <div class="gallery-item"><a href="https://portfolio-apichai.netlify.app/" target="_blank"><img src="image/psa.jpg" alt="Portfolio Site"></a><h3>Another Portfolio</h3><p>A different style portfolio.</p></div>
+                <div class="gallery-item"><a href="https://apichaiweb.netlify.app" target="_blank"><img src="image/eas.jpg" alt="Old Profile"></a><h3>Old Profile Site</h3><p>My first portfolio attempt.</p><a href="https://apichaiweb.netlify.app"><p>https://apichaiweb.netlify.app</p></a></div>
+                <div class="gallery-item"><a href="https://srtlearn.netlify.app/" target="_blank"><img src="image/eaa.jpg" alt="School Site"></a><h3>School Category Site</h3><p>A project for school resources.</p><a href="https://srtlearn.netlify.app/"><p>https://srtlearn.netlify.app/</p></a></div>
+                <div class="gallery-item"><a href="https://portfolio-apichai.netlify.app/" target="_blank"><img src="image/psa.jpg" alt="Portfolio Site"></a><h3>Another Portfolio</h3><p>A different style portfolio.</p><a href="https://portfolio-apichai.netlify.app/"><p>https://portfolio-apichai.netlify.app/</p></a></div>
             </div>
 
         </div>
@@ -525,6 +849,83 @@
     <canvas id="pacman-canvas"></canvas>
 
     <script>
+        /* เพิ่มฟังก์ชันนี้ก่อนฟังก์ชัน showPage */
+        function centerSectionTitle(page) {
+            const sectionTitle = page.querySelector('.section-title');
+            if (sectionTitle) {
+                setTimeout(() => {
+                    const titleRect = sectionTitle.getBoundingClientRect();
+                    const windowHeight = window.innerHeight;
+                    const scrollTop = window.pageYOffset;
+                    const targetScroll = scrollTop + titleRect.top - (windowHeight / 2) + (titleRect.height / 2);
+                    
+                    window.scrollTo({
+                        top: targetScroll,
+                        behavior: 'smooth'
+                    });
+                }, 0); // รอให้ animation เสร็จก่อน
+            }
+        }
+
+        // แทนที่ฟังก์ชัน simulateLoading เดิมด้วยฟังก์ชันใหม่
+    function initializeLoading() {
+        const loadingScreen = document.getElementById('loading-screen');
+        const loadingPixels = document.querySelector('.loading-pixels');
+        const loadingPercentage = document.querySelector('.loading-percentage');
+        const resources = document.images; // รวมรูปภาพทั้งหมด
+        let loadedResources = 0;
+        
+        // ติดตามการโหลดทรัพยากร
+        function updateProgress() {
+            const progress = (loadedResources / resources.length) * 100;
+            loadingPixels.style.width = `${progress}%`;
+            loadingPercentage.textContent = `${Math.floor(progress)}%`;
+            
+            if (loadedResources >= resources.length) {
+                // โหลดเสร็จแล้ว
+                setTimeout(() => {
+                    loadingScreen.style.opacity = '0';
+                    setTimeout(() => {
+                        loadingScreen.style.display = 'none';
+                        showPage('cover', document.querySelector('.nav-btn[data-page="cover"]'));
+                    }, 300);
+                }, 200);
+            }
+        }
+
+    // ตรวจสอบการโหลดของแต่ละรูปภาพ
+    Array.from(resources).forEach(img => {
+        if (img.complete) {
+            loadedResources++;
+        } else {
+            img.addEventListener('load', () => {
+                loadedResources++;
+                updateProgress();
+            });
+            img.addEventListener('error', () => {
+                loadedResources++;
+                updateProgress();
+            });
+        }
+    });
+
+    // อัพเดทครั้งแรกสำหรับรูปที่โหลดเสร็จแล้ว
+    updateProgress();
+
+    // ถ้าไม่มีรูปภาพหรือโหลดเร็วมาก
+    if (resources.length === 0 || loadedResources === resources.length) {
+        setTimeout(() => {
+            loadingScreen.style.display = 'none';
+            showPage('cover', document.querySelector('.nav-btn[data-page="cover"]'));
+        }, 500);
+    }
+}
+
+// แก้ไข document.addEventListener
+document.addEventListener('DOMContentLoaded', function() {
+    initializeLoading();
+});
+
         const pages = document.querySelectorAll('.page');
         const navButtons = document.querySelectorAll('.nav-btn');
         const cursorPixel = document.querySelector('.cursor-pixel');
@@ -622,6 +1023,11 @@
 
             setTimeout(() => {
                 nextPage.classList.add('active', enterAnimationClass);
+                
+                // เพิ่มบรรทัดนี้
+                if (pageId !== 'cover') {
+                    centerSectionTitle(nextPage);
+                }
             }, 10); // Small delay for display change before animation
 
             // Update Nav Buttons
@@ -650,8 +1056,13 @@
         });
 
 
+        // document.addEventListener('DOMContentLoaded', function() {
+        //     simulateLoading();
+        // });
+
+        // เปลี่ยนเป็น:
         document.addEventListener('DOMContentLoaded', function() {
-            showPage('cover', document.querySelector('.nav-btn[data-page="cover"]'));
+            initializeLoading();
         });
 
         document.addEventListener('keydown', function(e) {
@@ -679,124 +1090,124 @@
         });
 
         // PackMan background (Keep as is)
-const canvas = document.getElementById("pacman-canvas");
-const ctx = canvas.getContext("2d");
+        const canvas = document.getElementById("pacman-canvas");
+        const ctx = canvas.getContext("2d");
 
-const tileSize = 32;
-const cols = Math.floor(window.innerWidth / tileSize);
-const rows = Math.floor(window.innerHeight / tileSize);
+        const tileSize = 32;
+        const cols = Math.floor(window.innerWidth / tileSize);
+        const rows = Math.floor(window.innerHeight / tileSize);
 
-function resizeCanvas() {
-    canvas.width = cols * tileSize;
-    canvas.height = rows * tileSize;
-}
-// window.addEventListener("resize", () => location.reload());
-resizeCanvas();
-
-const pacman = {
-    x: Math.floor(cols / 2),
-    y: Math.floor(rows / 2),
-    radius: tileSize / 2 - 4,
-    direction: getRandomDirection(),
-};
-
-function getRandomDirection() {
-    const dirs = ["up", "down", "left", "right"];
-    return dirs[Math.floor(Math.random() * dirs.length)];
-}
-
-const dots = [];
-for (let x = 0; x < cols; x++) {
-    for (let y = 0; y < rows; y++) {
-        if (Math.random() < 0.25 && (x !== pacman.x || y !== pacman.y)) {
-            dots.push({ x, y });
+        function resizeCanvas() {
+            canvas.width = cols * tileSize;
+            canvas.height = rows * tileSize;
         }
-    }
-}
+        // window.addEventListener("resize", () => location.reload());
+        resizeCanvas();
 
-function drawDot(dot) {
-    ctx.beginPath();
-    ctx.arc(dot.x * tileSize + tileSize / 2, dot.y * tileSize + tileSize / 2, 4, 0, Math.PI * 2);
-    ctx.fillStyle = "white";
-    ctx.fill();
-}
+        const pacman = {
+            x: Math.floor(cols / 2),
+            y: Math.floor(rows / 2),
+            radius: tileSize / 2 - 4,
+            direction: getRandomDirection(),
+        };
 
-function drawPacman(pac, mouthOpen = true) {
-    const px = pac.x * tileSize + tileSize / 2;
-    const py = pac.y * tileSize + tileSize / 2;
-
-    ctx.beginPath();
-    let startAngle = 0.2, endAngle = 1.8;
-
-    switch (pac.direction) {
-        case "right": startAngle = 0.2; endAngle = 1.8; break;
-        case "left": startAngle = 1.2; endAngle = 0.8; break;
-        case "up": startAngle = 1.75; endAngle = 1.25; break;
-        case "down": startAngle = 0.75; endAngle = 0.25; break;
-    }
-
-    if (mouthOpen) {
-        ctx.moveTo(px, py);
-        ctx.arc(px, py, pac.radius, startAngle * Math.PI, endAngle * Math.PI, false);
-    } else {
-        ctx.arc(px, py, pac.radius, 0, 2 * Math.PI);
-    }
-    ctx.fillStyle = "orange";
-    ctx.fill();
-    ctx.closePath();
-
-    // Eye
-    ctx.beginPath();
-    let eyeX = px, eyeY = py;
-    if (pac.direction === "right") eyeX += 8, eyeY -= 10;
-    if (pac.direction === "left") eyeX -= 8, eyeY -= 10;
-    if (pac.direction === "up") eyeY -= 12;
-    if (pac.direction === "down") eyeY += 4;
-    ctx.arc(eyeX, eyeY, 3, 0, 2 * Math.PI);
-    ctx.fillStyle = "black";
-    ctx.fill();
-}
-
-function movePacman() {
-    switch (pacman.direction) {
-        case "right": pacman.x += 1; break;
-        case "left": pacman.x -= 1; break;
-        case "up": pacman.y -= 1; break;
-        case "down": pacman.y += 1; break;
-    }
-
-    // วนจอ
-    if (pacman.x < 0) pacman.x = cols - 1;
-    if (pacman.x >= cols) pacman.x = 0;
-    if (pacman.y < 0) pacman.y = rows - 1;
-    if (pacman.y >= rows) pacman.y = 0;
-
-    // กินจุด
-    for (let i = 0; i < dots.length; i++) {
-        if (dots[i].x === pacman.x && dots[i].y === pacman.y) {
-            dots.splice(i, 1);
-            pacman.direction = getRandomDirection(); // เปลี่ยนทางเมื่อกินจุด
-            break;
+        function getRandomDirection() {
+            const dirs = ["up", "down", "left", "right"];
+            return dirs[Math.floor(Math.random() * dirs.length)];
         }
-    }
 
-    // เปลี่ยนทางสุ่มบางครั้ง (เช่นทุก 5 ก้าว)
-    if (Math.random() < 0.1) {
-        pacman.direction = getRandomDirection();
-    }
-}
+        const dots = [];
+        for (let x = 0; x < cols; x++) {
+            for (let y = 0; y < rows; y++) {
+                if (Math.random() < 0.25 && (x !== pacman.x || y !== pacman.y)) {
+                    dots.push({ x, y });
+                }
+            }
+        }
 
-function animate() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+        function drawDot(dot) {
+            ctx.beginPath();
+            ctx.arc(dot.x * tileSize + tileSize / 2, dot.y * tileSize + tileSize / 2, 4, 0, Math.PI * 2);
+            ctx.fillStyle = "white";
+            ctx.fill();
+        }
 
-    dots.forEach(drawDot);
-    drawPacman(pacman, Math.floor(Date.now() / 150) % 2 === 0);
-    movePacman();
+        function drawPacman(pac, mouthOpen = true) {
+            const px = pac.x * tileSize + tileSize / 2;
+            const py = pac.y * tileSize + tileSize / 2;
 
-    setTimeout(() => requestAnimationFrame(animate), 200);
-}
+            ctx.beginPath();
+            let startAngle = 0.2, endAngle = 1.8;
 
-animate();
+            switch (pac.direction) {
+                case "right": startAngle = 0.2; endAngle = 1.8; break;
+                case "left": startAngle = 1.2; endAngle = 0.8; break;
+                case "up": startAngle = 1.75; endAngle = 1.25; break;
+                case "down": startAngle = 0.75; endAngle = 0.25; break;
+            }
+
+            if (mouthOpen) {
+                ctx.moveTo(px, py);
+                ctx.arc(px, py, pac.radius, startAngle * Math.PI, endAngle * Math.PI, false);
+            } else {
+                ctx.arc(px, py, pac.radius, 0, 2 * Math.PI);
+            }
+            ctx.fillStyle = "orange";
+            ctx.fill();
+            ctx.closePath();
+
+            // Eye
+            ctx.beginPath();
+            let eyeX = px, eyeY = py;
+            if (pac.direction === "right") eyeX += 8, eyeY -= 10;
+            if (pac.direction === "left") eyeX -= 8, eyeY -= 10;
+            if (pac.direction === "up") eyeY -= 12;
+            if (pac.direction === "down") eyeY += 4;
+            ctx.arc(eyeX, eyeY, 3, 0, 2 * Math.PI);
+            ctx.fillStyle = "black";
+            ctx.fill();
+        }
+
+        function movePacman() {
+            switch (pacman.direction) {
+                case "right": pacman.x += 1; break;
+                case "left": pacman.x -= 1; break;
+                case "up": pacman.y -= 1; break;
+                case "down": pacman.y += 1; break;
+            }
+
+            // วนจอ
+            if (pacman.x < 0) pacman.x = cols - 1;
+            if (pacman.x >= cols) pacman.x = 0;
+            if (pacman.y < 0) pacman.y = rows - 1;
+            if (pacman.y >= rows) pacman.y = 0;
+
+            // กินจุด
+            for (let i = 0; i < dots.length; i++) {
+                if (dots[i].x === pacman.x && dots[i].y === pacman.y) {
+                    dots.splice(i, 1);
+                    pacman.direction = getRandomDirection(); // เปลี่ยนทางเมื่อกินจุด
+                    break;
+                }
+            }
+
+            // เปลี่ยนทางสุ่มบางครั้ง (เช่นทุก 5 ก้าว)
+            if (Math.random() < 0.1) {
+                pacman.direction = getRandomDirection();
+            }
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            dots.forEach(drawDot);
+            drawPacman(pacman, Math.floor(Date.now() / 150) % 2 === 0);
+            movePacman();
+
+            setTimeout(() => requestAnimationFrame(animate), 200);
+        }
+
+        animate();
     </script>
 </body>
 </html>
