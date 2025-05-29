@@ -76,8 +76,10 @@
             box-shadow: var(--pixel-size) var(--pixel-size) 0 0 var(--kmitl-maroon);
             margin: 1.5rem 0; /* Only top/bottom margin */
             text-align: center;
-            opacity: 0; /* Start hidden */
-            transition: opacity 0.3s ease-in-out;
+            opacity: 0; /* Start hidden for animations */
+            transition: opacity 0.3s ease-in-out; /* Fallback transition */
+            padding-bottom: 50px; /* Add padding for long content */
+            transform: translateZ(0); /* Promote to GPU layer for smoother anims */
         }
         .page.active {
             display: flex;
@@ -100,9 +102,35 @@
             50% { opacity: 0.5; transform: translateX(-50px) skewX(20deg); filter: blur(5px); }
             100% { opacity: 0; transform: translateX(-100px) skewX(30deg); filter: blur(10px); }
         }
+        @keyframes fade-down-in {
+            0% { opacity: 0; transform: translateY(-80px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes slide-left-in {
+            0% { opacity: 0; transform: translateX(-100px); }
+            100% { opacity: 1; transform: translateX(0); }
+        }
+        @keyframes zoom-in {
+            0% { opacity: 0; transform: scale(0.6); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+        @keyframes rise-up-in {
+            0% { opacity: 0; transform: translateY(100px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+         @keyframes flip-in {
+            0% { opacity: 0; transform: perspective(1000px) rotateY(-90deg); }
+            100% { opacity: 1; transform: perspective(1000px) rotateY(0); }
+        }
 
-        .page-enter { animation: glitch-in 0.7s cubic-bezier(0.250, 0.460, 0.450, 0.940) both; }
-        .page-exit { animation: glitch-out 0.8s cubic-bezier(0.550, 0.085, 0.680, 0.530) both; }
+        /* Animation Classes */
+        .page-glitch-in { animation: glitch-in 0.7s cubic-bezier(0.250, 0.460, 0.450, 0.940) both; }
+        .page-fade-down-in { animation: fade-down-in 0.8s cubic-bezier(0.250, 0.460, 0.450, 0.940) both; }
+        .page-slide-left-in { animation: slide-left-in 0.7s cubic-bezier(0.250, 0.460, 0.450, 0.940) both; }
+        .page-zoom-in { animation: zoom-in 0.6s ease-out both; }
+        .page-rise-up-in { animation: rise-up-in 0.7s ease-out both; }
+        .page-flip-in { animation: flip-in 0.8s ease-in-out both; }
+        .page-exit { animation: glitch-out 0.6s cubic-bezier(0.550, 0.085, 0.680, 0.530) both; }
         /* --- End Transitions --- */
 
 
@@ -146,7 +174,16 @@
         .profile-img:hover, .ces-img:hover, .big-img:hover, .gallery-item img:hover { transform: scale(1.03) rotate(2deg); }
 
         /* Navigation */
-        .nav-container { position: fixed; bottom: 1rem; left: 50%; transform: translateX(-50%); z-index: 1000; }
+        .nav-container {
+            position: fixed; bottom: 1rem; left: 50%;
+            transform: translateX(-50%) translateY(0); /* Show position */
+            z-index: 1000;
+            transition: transform 0.6s cubic-bezier(0.68, -0.55, 0.27, 1.55); /* Bounce effect transition */
+            display: none; /* Initially hidden */
+        }
+        .nav-container.hidden {
+            transform: translateX(-50%) translateY(150%); /* Move down to hide */
+        }
         .nav {
             background: var(--container-bg); padding: 0.8rem; display: flex; gap: 0.8rem;
             border: var(--pixel-size) solid var(--kmitl-maroon);
@@ -165,6 +202,27 @@
             background: var(--kmitl-orange); color: #fff; transform: translate(3px, 3px); box-shadow: none;
             border-color: var(--kmitl-maroon); text-shadow: 1px 1px 0 var(--kmitl-maroon);
         }
+
+        /* Play Button */
+        .play-btn {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 1.5rem;
+            padding: 1rem 2rem;
+            background: var(--kmitl-orange);
+            color: #fff;
+            border: 4px solid var(--kmitl-maroon);
+            box-shadow: 6px 6px 0 var(--kmitl-maroon);
+            text-transform: uppercase;
+            margin-top: 2rem;
+            transition: all 0.2s steps(2, end);
+        }
+        .play-btn:hover {
+            background: var(--kmitl-maroon);
+            color: var(--kmitl-orange);
+            transform: translate(3px, 3px);
+            box-shadow: 3px 3px 0 var(--kmitl-orange);
+        }
+
 
         /* Profile Grid - Fixed Layout */
         .profile-grid {
@@ -196,8 +254,8 @@
         }
         .contact-info h3 { color: white; border: none; text-shadow: 2px 2px 0 #000;}
         .contact-item span:first-child { color: var(--kmitl-orange); font-size: 1.5rem; }
-        
-        
+
+
         /* Timeline */
         .timeline { position: relative; padding-left: 2rem; border-left: 4px dashed var(--kmitl-orange); }
         .timeline::before { content: none; /* Removed old line */ }
@@ -242,7 +300,7 @@
             text-shadow: 2px 2px 0 var(--kmitl-maroon);
         }
         .skill-bar {
-            width: 100%; background-color: #222; 
+            width: 100%; background-color: #222;
             border: 2px solid var(--game-green);
             padding: 2px; height: 25px; margin-bottom: 1rem;
             border-radius: 5px; overflow: hidden;
@@ -253,12 +311,12 @@
         }
         .skill-level::before { /* Pixel blocks effect */
             content: ""; display: block; width: 100%; height: 100%;
-            background: repeating-linear-gradient(90deg, 
-                transparent 0px, transparent 6px, 
+            background: repeating-linear-gradient(90deg,
+                transparent 0px, transparent 6px,
                 rgba(255,255,255,0.3) 6px, rgba(255,255,255,0.3) 8px);
-            animation: skillFlow 2s linear infinite;    
+            animation: skillFlow 2s linear infinite;
         }
-        
+
 
 
         @keyframes skillFlow {
@@ -278,11 +336,11 @@
             .profile-grid {
                 grid-template-columns: 1fr;
             }
-            
+
             .game-hud {
                 flex-direction: column; gap: 0.5rem; padding: 0.5rem;
             }
-            
+
             .level-bar { width: 150px; }
         }
         @media (max-width: 480px) {
@@ -300,7 +358,7 @@
         /* Ensure enough space for absolute positioned pages */
         #page-container-wrapper {
             position: relative;
-            min-height: 100vh; /* Adjust as needed */
+            min-height: 120vh; /* Increase height to allow scrolling */
             padding-bottom: 100px;
         }
 
@@ -316,9 +374,9 @@
         #pacman-canvas {
             position: fixed;
             top: 0; left: 0;
-            width: 200%;
-            height: 200%;
-            z-index: 0;
+            width: 100%; /* Corrected width/height */
+            height: 100%;
+            z-index: -1; /* Place it behind content */
             pointer-events: none;
         }
 
@@ -327,12 +385,15 @@
 </head>
 <body>
 
-    <div class="container" id="page-container-wrapper"> <div class="page cover-page" id="cover"> <img class="kmitl-logo-img" src="image/logo.png" alt="KMITL Engineering Logo">
+    <div class="container" id="page-container-wrapper">
+        <div class="page cover-page" id="cover">
+            <img class="kmitl-logo-img" src="image/logo.png" alt="KMITL Engineering Logo">
             <h1 class="title">Portfolio</h1>
             <p class="subtitle">Faculty of Computer Engineering - KMITL</p>
             <img class="profile-img" src="image/448667135_1019996143115967_3131599560298724223_n.jpg" alt="Apichai Kmapanin">
             <h2 class="name typewriter">Apichai Khampanin</h2>
             <p class="school">King Mongkut's Institute of Technology Ladkrabang</p>
+            <button id="play-button" class="play-btn">START</button>
         </div>
 
         <div class="page content-page" id="preface">
@@ -355,11 +416,9 @@
             <img class="big-img" src="image/banner.jpg">
         </div>
 
-        <!-- Profile Page - Fixed Layout -->
         <div class="page content-page" id="profile">
             <h2 class="section-title">Profile</h2>
             <div class="profile-grid">
-                <!-- Personal Info - Left Side -->
                 <div class="skills-section">
                     <h3>Personal Info</h3>
                     <p><strong>Name:</strong> Apichai Kmapanin</p>
@@ -370,8 +429,7 @@
                     <p><strong>Program:</strong> English-Math</p>
                     <p><strong>Hobbies:</strong> Coding, Music</p>
                 </div>
-                
-                <!-- Tech Skills - Right Side -->
+
                 <div class="skills-section">
                     <h3>Tech_Skills.exe</h3>
                     <div class="skill">
@@ -449,7 +507,8 @@
             <div class="certificate-item"><img class="ces-img" src="image/ces1.jpg" alt="Cert 2"><div class="year-badge">2023</div><h3>Student Dev Lvl 71</h3><p>Continued growth and advanced capabilities.</p></div>
             <div class="certificate-item"><img class="ces-img" src="image/ces2.jpg" alt="Cert 3"><div class="year-badge">2024</div><h3>Math Magic Comp.</h3><p>Showcased math & problem-solving skills.</p></div>
         </div>
-    </div> <div class="nav-container">
+    </div>
+    <div class="nav-container" id="main-nav">
         <div class="nav">
             <button class="nav-btn" data-page="cover" onclick="showPage('cover', this)"><img src="icon/home.png" width="50" height="50"></button>
             <button class="nav-btn" data-page="preface" onclick="showPage('preface', this)"><img src="icon/sheet.png" width="50" height="50"></button>
@@ -463,51 +522,107 @@
     </div>
 
     <div class="cursor-pixel"></div>
-    <canvas id="pacman-canvas" style="position: fixed; top: 0; left: 0;"></canvas>
+    <canvas id="pacman-canvas"></canvas>
 
     <script>
         const pages = document.querySelectorAll('.page');
         const navButtons = document.querySelectorAll('.nav-btn');
         const cursorPixel = document.querySelector('.cursor-pixel');
+        const navContainer = document.getElementById('main-nav');
+        const playButton = document.getElementById('play-button');
         let currentPage = null;
-        const transitionDuration = 600; // Match animation duration
+        const transitionDuration = 100; // Match animation duration
+        let navHideTimer;
+        let navScrollListenerActive = false;
+
+        // Define animation classes for each page
+        const pageAnimations = {
+            'cover': 'page-glitch-in',
+            'preface': 'page-fade-down-in',
+            'sop': 'page-slide-left-in',
+            'profile': 'page-zoom-in',
+            'education': 'page-rise-up-in',
+            'activities': 'page-flip-in',
+            'experience': 'page-glitch-in',
+            'certificates': 'page-zoom-in'
+        };
+
+        // Function to handle scroll and timer for navbar
+        const handleNavScroll = () => {
+            navContainer.classList.add('hidden'); // Hide on scroll
+            clearTimeout(navHideTimer);
+            navHideTimer = setTimeout(() => {
+                navContainer.classList.remove('hidden'); // Show after 2s
+            }, 500); // <-- Sets the time (in ms) for the navbar to reappear (here: 2000ms = 2 seconds)
+        };
+
+        // Function to add the scroll listener
+        function startNavScrollListener() {
+            if (!navScrollListenerActive) {
+                window.addEventListener('scroll', handleNavScroll);
+                navScrollListenerActive = true;
+            }
+        }
+
+        // Function to remove the scroll listener
+        function stopNavScrollListener() {
+            if (navScrollListenerActive) {
+                window.removeEventListener('scroll', handleNavScroll);
+                clearTimeout(navHideTimer); // Clear any pending show
+                navScrollListenerActive = false;
+            }
+        }
 
         function showPage(pageId, clickedButton) {
             const nextPage = document.getElementById(pageId);
 
             if (!nextPage || (currentPage && currentPage.id === pageId)) {
-                return; // Do nothing if same page or page not found
+                return;
             }
 
             const oldPage = currentPage;
-            currentPage = nextPage; // Set new page as current
+            currentPage = nextPage;
 
-            // Add exit animation to the old page (if it exists)
+            // --- Navbar Visibility Control ---
+            if (pageId === 'cover') {
+                navContainer.style.display = 'none';
+                navContainer.classList.add('hidden');
+                stopNavScrollListener();
+            } else if (navContainer.style.display === 'none') {
+                // Show nav and start animation/listener if moving away from cover
+                navContainer.style.display = 'block';
+                navContainer.classList.add('hidden'); // Start hidden
+                startNavScrollListener();
+                setTimeout(() => {
+                    navContainer.classList.remove('hidden'); // Trigger slide-up animation
+                }, 50); // Small delay
+            }
+            // --- End Navbar Visibility Control ---
+
+            const enterAnimationClass = pageAnimations[pageId] || 'page-glitch-in';
+
+            // Add exit animation to the old page
             if (oldPage) {
                 oldPage.classList.add('page-exit');
-                oldPage.classList.remove('active', 'page-enter');
+                oldPage.classList.remove('active');
+                // Remove all possible animation classes
+                Object.values(pageAnimations).forEach(animClass => oldPage.classList.remove(animClass));
 
-                // Wait for animation to finish before hiding
                 setTimeout(() => {
                     oldPage.style.display = 'none';
                     oldPage.classList.remove('page-exit');
-                }, transitionDuration - 50); // Hide just before anim ends
+                }, transitionDuration - 50);
             }
 
             // Prepare and show the new page
-            nextPage.classList.remove('page-exit'); // Ensure no exit class
+            nextPage.classList.remove('page-exit');
             nextPage.style.display = nextPage.classList.contains('cover-page') ? 'flex' : 'block';
+             // Remove any lingering animation classes before adding new one
+            Object.values(pageAnimations).forEach(animClass => nextPage.classList.remove(animClass));
 
-            // Add enter animation with a tiny delay to allow display change
             setTimeout(() => {
-                nextPage.classList.add('active', 'page-enter');
-            }, 10); // Small delay
-
-            // Remove enter animation class after it finishes
-            setTimeout(() => {
-                nextPage.classList.remove('page-enter');
-            }, transitionDuration);
-
+                nextPage.classList.add('active', enterAnimationClass);
+            }, 10); // Small delay for display change before animation
 
             // Update Nav Buttons
             navButtons.forEach(btn => btn.classList.remove('active'));
@@ -523,14 +638,19 @@
                 const nameElement = document.querySelector('.name.typewriter');
                 if (nameElement) {
                     nameElement.style.animation = 'none';
-                    nameElement.offsetHeight; /* trigger reflow */
+                    nameElement.offsetHeight;
                     nameElement.style.animation = null;
                 }
             }
         }
 
+        // Play Button Click Listener
+        playButton.addEventListener('click', () => {
+            showPage('preface', document.querySelector('.nav-btn[data-page="preface"]'));
+        });
+
+
         document.addEventListener('DOMContentLoaded', function() {
-            // Set 'cover' as the active page initially
             showPage('cover', document.querySelector('.nav-btn[data-page="cover"]'));
         });
 
@@ -558,7 +678,7 @@
             cursorPixel.style.top = `${e.clientY}px`;
         });
 
-        // PackMan background
+        // PackMan background (Keep as is)
 const canvas = document.getElementById("pacman-canvas");
 const ctx = canvas.getContext("2d");
 
@@ -570,7 +690,7 @@ function resizeCanvas() {
     canvas.width = cols * tileSize;
     canvas.height = rows * tileSize;
 }
-window.addEventListener("resize", () => location.reload());
+// window.addEventListener("resize", () => location.reload());
 resizeCanvas();
 
 const pacman = {
